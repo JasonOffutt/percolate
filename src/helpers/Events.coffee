@@ -1,0 +1,1 @@
+CentralAZ.UserPortal.Helpers.Events = _.extend {}, Backbone.Events
