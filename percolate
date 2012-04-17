@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var foo = "I'm using node from the command line";
+console.log(foo);
+
+var coffee = require('coffee-script');
+var fs = require('fs');
+
+//process.argv.slice(2).forEach(function(arg) {
+//	console.log(arg);
+//});
+
+console.log(coffee.compile('foo() for foo in foos'));

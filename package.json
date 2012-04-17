@@ -1,0 +1,12 @@
+{
+	"name": "Percolator",
+	"description": "CoffeeScript builder",
+	"author": "Jason Offutt",
+	"version": "0.1.0",
+	"engines": {
+		"node": ">=0.4.0"
+	},
+	"dependencies": {
+		"coffee-script": ">=1.3.1"
+	}
+}
