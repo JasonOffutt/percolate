@@ -36,3 +36,4 @@ Thumbs.db
 # Directories #
 ###############
 test/
+node_modules/
