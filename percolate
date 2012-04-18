@@ -1,13 +1,37 @@
 #!/usr/bin/env node
 
-var foo = "I'm using node from the command line";
-console.log(foo);
+var coffee = require('coffee-script'),
+	fs = require('fs'),
+	startDir = process.argv[2],
+	dive = function(dir, action) {
+		// Make sure that 'action' is a function
+		if (typeof action !== 'function') {
+			action = function(error, file) {};
+		}
 
-var coffee = require('coffee-script');
-var fs = require('fs');
+		fs.readdir(dir, function(err, list) {
+			if (err) {
+				return action(err);
+			}
+
+			list.forEach(function(file) {
+				var path = dir + '/' + file;
+				fs.stat(path, function(err, stat) {
+					if (stat && stat.isDirectory()) {
+						dive(path, action);
+					} else {
+						console.log(file);
+						action(null, path);
+					}
+				});
+			});
+		});
+	};
+
+dive(startDir);
 
 //process.argv.slice(2).forEach(function(arg) {
 //	console.log(arg);
 //});
 
-console.log(coffee.compile('foo() for foo in foos'));
+//console.log(coffee.compile('foo() for foo in foos'));
