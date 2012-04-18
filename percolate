@@ -2,36 +2,75 @@
 
 var coffee = require('coffee-script'),
 	fs = require('fs'),
-	startDir = process.argv[2],
-	dive = function(dir, action) {
-		// Make sure that 'action' is a function
-		if (typeof action !== 'function') {
-			action = function(error, file) {};
+	_ = require('underscore')._,
+	startDir = process.argv[2],  // TODO: handle arguments more elegantly... consider using switches, etc
+	buffer = {},
+	count = 0,
+	walk = function(dir, callback) {
+		// Make sure that 'callback' is a function
+		if (typeof callback !== 'function') {
+			callback = function(error, file) {};
 		}
 
 		fs.readdir(dir, function(err, list) {
 			if (err) {
-				return action(err);
+				return callback(err);
 			}
 
 			list.forEach(function(file) {
 				var path = dir + '/' + file;
 				fs.stat(path, function(err, stat) {
 					if (stat && stat.isDirectory()) {
-						dive(path, action);
+						walk(path, callback);
 					} else {
-						console.log(file);
-						action(null, path);
+						count++;
+						callback(null, path);
 					}
 				});
 			});
 		});
+	},
+	compileComplete = function() {
+		var list = _.keys(buffer);
+		list = _.sortBy(list, function(key) {
+			return key;
+		});
+
+		console.log(list);
 	};
 
-dive(startDir);
+walk(startDir, function(err, path) {
+	//console.log(path);
+
+	fs.readFile(path, 'utf8', function(err, data) {
+		if (err) {
+			return;
+		}
+	
+		var js = coffee.compile(data),
+			keys;
+		buffer[path] = js;
+		keys = _.keys(buffer);
+
+		if (keys.length === count) {
+			compileComplete();
+		}
+	});
+});
+
+// TODO: Sort buffer by index (alphabetical), then compile
+//var list = _.keys(buffer);
+//list = _.sortBy(list, function(item) {
+//	return item;
+//});
+//
+//_.forEach(list, function(key) {
+//	var contents = buffer[key];
+//	// Write contents to file...
+//});
+
+
 
 //process.argv.slice(2).forEach(function(arg) {
 //	console.log(arg);
 //});
-
-//console.log(coffee.compile('foo() for foo in foos'));
